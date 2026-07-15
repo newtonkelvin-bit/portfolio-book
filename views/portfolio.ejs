@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kelvin Wambua | Interactive Portfolio Book</title>
+    <style>
+        /* Slow-moving, animated gradient background */
+        body {
+            background: linear-gradient(-45deg, #0d0614, #180b29, #090312, #1f0f33);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            perspective: 2000px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Keyboard Tip */
+        .keyboard-tip {
+            position: absolute;
+            bottom: 20px;
+            color: rgba(176, 162, 199, 0.6);
+            font-size: 12px;
+            letter-spacing: 1px;
+            pointer-events: none;
+            background: rgba(26, 18, 38, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(162, 155, 254, 0.1);
+        }
+
+        /* The Book with a gentle floating animation */
+        .book {
+            width: 920px; 
+            height: 650px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            perspective: 2500px; 
+            transform-style: preserve-3d;
+            animation: floatBook 6s ease-in-out infinite;
+        }
+
+        @keyframes floatBook {
+            0% { transform: translate(-50%, -50%) translateY(0px) rotateX(2deg); }
+            50% { transform: translate(-50%, -50%) translateY(-10px) rotateX(4deg); }
+            100% { transform: translate(-50%, -50%) translateY(0px) rotateX(2deg); }
+        }
+
+        .book-page {
+            position: absolute;
+            width: 460px;
+            height: 100%;
+            top: 0;
+            right: 0; 
+            transform-style: preserve-3d; 
+            transform-origin: left center; 
+            transition: transform 0.9s cubic-bezier(0.4, 0.0, 0.2, 1); 
+        }
+
+        #page1 { z-index: 4; }
+        #page2 { z-index: 3; }
+        #page3 { z-index: 2; }
+        #page4 { z-index: 1; } 
+
+        #page1.is-flipped { z-index: 1; }
+        #page2.is-flipped { z-index: 2; }
+        #page3.is-flipped { z-index: 3; }
+        #page4.is-flipped { z-index: 4; }
+
+        .page-front, .page-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            backface-visibility: hidden; 
+            border-radius: 0 12px 12px 0;
+            padding: 40px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: box-shadow 0.9s ease, border-color 0.9s ease;
+        }
+
+        /* Glowing Edge effects */
+        .page-front {
+            background: #1a1226;
+            color: #ffffff;
+            border: 1.5px solid #a29bfe;
+            border-left: none;
+            box-shadow: inset 10px 0 20px rgba(0,0,0,0.4), 
+                        0 0 20px rgba(108, 92, 231, 0.3), 
+                        5px 4px 25px rgba(0,0,0,0.6);
+        }
+
+        .page-back {
+            background: #231932;
+            color: #b0a2c7;
+            transform: rotateY(180deg); 
+            border: 1.5px solid #a29bfe;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+            box-shadow: inset -10px 0 20px rgba(0,0,0,0.4), 
+                        0 0 20px rgba(108, 92, 231, 0.3), 
+                        -5px 4px 25px rgba(0,0,0,0.6);
+        }
+
+        .book-page.is-flipped {
+            transform: rotateY(-180deg);
+        }
+        
+        .book-page.is-flipped .page-front {
+            box-shadow: inset 2px 0 10px rgba(0,0,0,0.9), 0 0 5px rgba(108, 92, 231, 0.1);
+        }
+
+        /* Cover-specific centering */
+        .cover-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Profile Image centered and glowing */
+        .profile-img-container {
+            width: 135px;
+            height: 135px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #a29bfe;
+            margin-bottom: 25px;
+            box-shadow: 0 0 25px rgba(162, 155, 254, 0.6), 0 8px 16px rgba(0,0,0,0.5);
+            transition: transform 0.5s ease, border-color 0.5s ease;
+        }
+
+        .profile-img-container:hover {
+            transform: scale(1.08) rotate(3deg);
+            border-color: #6c5ce7;
+        }
+
+        .profile-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Interactive Project Card Style */
+        .project-card {
+            background: #211631;
+            border: 1px solid #3d2d54;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            transform: translateY(-3px);
+            border-color: #a29bfe;
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.2);
+        }
+
+        .tech-badge {
+            background: rgba(108, 92, 231, 0.2);
+            color: #a29bfe;
+            border: 1px solid rgba(108, 92, 231, 0.4);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+
+        h1, h2, h3, h4 {
+            margin-top: 0;
+            color: #fff;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        li {
+            margin-bottom: 6px;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #dcdde1;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        button, .btn-link {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover, .btn-link:hover {
+            background: #5b4cc4;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(108, 92, 231, 0.8);
+        }
+
+        button.secondary {
+            background: #4b3b63;
+            box-shadow: none;
+        }
+        button.secondary:hover {
+            background: #3a2c50;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio Element for Page-Flip Sound -->
+    <audio id="flipSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
+
+    <div class="book">
+        
+        <!-- PAGE 1: COVER & PROFILE -->
+        <div class="book-page" id="page1">
+            <div class="page-front" style="background: #120b1c; border-color: #6c5ce7; box-shadow: inset 10px 0 20px rgba(0,0,0,0.4), 0 0 35px rgba(108, 92, 231, 0.5);">
+                <div class="cover-content">
+                    <div class="profile-img-container">
+                        <img src="/profile.jpg" alt="Kelvin Wambua Profile">
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h1 style="font-size: 30px; letter-spacing: 3px; margin-bottom: 10px; color: #fff;">KELVIN WAMBUA</h1>
+                        <p style="color: #a29bfe; font-size: 15px; letter-spacing: 4px; font-weight: bold; margin: 0;">PORTFOLIO</p>
+                    </div>
+                    <button onclick="flipPage('page1')" style="padding: 12px 28px; font-size: 15px; letter-spacing: 1px;">OPEN PORTFOLIO &rarr;</button>
+                </div>
+            </div>
+            
+            <div class="page-back">
+                <div>
+                    <h2>Profile</h2>
+                    <p style="font-size: 13.5px; color: #dcdde1; line-height: 1.6; text-align: justify;">
+                        <%= data.profile %>
+                    </p>
+                </div>
+                <div class="actions">
+                    <button class="secondary" onclick="unflipPage('page1')">&larr; Close Cover</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: EXPERIENCE & FEATURED PROJECT -->
+        <div class="book-page" id="page2">
+            <div class="page-front">
+                <div>
+                    <h2>Working Experience</h2>
+                    <% data.experience.forEach(function(job) { %>
+                        <div style="margin-bottom: 10px;">
+                            <h3 style="margin-bottom: 2px; font-size: 15px; color: #a29bfe;"><%= job.title %></h3>
+                            <div style="font-size: 12px; color: #fff; font-weight: bold; margin-bottom: 5px;">
+                                <%= job.company %> <span style="color: #b0a2c7; font-weight: normal;">(<%= job.period %>)</span>
+                            </div>
+                            <ul style="margin: 5px 0;">
+                            <% job.duties.forEach(function(duty) { %>
+                                <li style="font-size: 12.5px;"><%= duty %></li>
+                            <% }); %>
+                            </ul>
+                        </div>
+                    <% }); %>
+
+                    <!-- Featured Project Card: SmartStock -->
+                    <div class="project-card">
+                        <h4 style="margin: 0 0 5px 0; color: #fff; font-size: 14px;">🛠️ Featured Project: SmartStock</h4>
+                        <p style="margin: 0 0 8px 0; font-size: 12px; color: #b0a2c7; line-height: 1.4;">
+                            A professional, custom web application built to streamline backend inventory logistics and stock tracking.
+                        </p>
+                        <div>
+                            <span class="tech-badge">Python</span>
+                            <span class="tech-badge">Django</span>
+                            <span class="tech-badge">SQL</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button onclick="flipPage('page2')">Next Page &rarr;</button>
+                </div>
+            </div>
+
+            <div class="page-back">
+                <div>
+                    <h2>Education</h2>
+                    <% data.education.forEach(function(edu) { %>
+                        <div style="margin-bottom: 15px; border-bottom: 1px solid #3d2d54; padding-bottom: 10px;">
+                            <h4 style="margin: 0 0 5px 0; color: #a29bfe; font-size: 15px;"><%= edu.institution %></h4>
+                            <span style="font-size: 12px; color: #b0a2c7; display: block; margin-bottom: 5px;"><%= edu.period %></span>
+                            <p style="margin: 0; font-size: 13px; color: #dcdde1; line-height: 1.4;"><%= edu.details %></p>
+                        </div>
+                    <% }); %>
+                </div>
+                <div class="actions">
+                    <button class="secondary" onclick="unflipPage('page2')">&larr; Back</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: SKILLS & CONTACT -->
+        <div class="book-page" id="page3">
+            <div class="page-front">
+                <div>
+                    <h2>Professional Skills</h2>
+                    <ul>
+                    <% data.skills.forEach(function(skill) { %>
+                        <li style="font-size: 13.5px; color: #fff; margin-bottom: 12px; list-style-type: square;">
+                            <%= skill %>
+                        </li>
+                    <% }); %>
+                    </ul>
+                </div>
+                <div class="actions">
+                    <button onclick="flipPage('page3')">Next Page &rarr;</button>
+                </div>
+            </div>
+
+            <div class="page-back">
+                <div>
+                    <h2>Contact & Info</h2>
+                    <p style="color: #b0a2c7; margin-bottom: 15px; font-size: 13.5px;">Let's connect for web development, system support, or data projects.</p>
+                    
+                    <div style="background: #1a1226; padding: 18px; border-radius: 8px; border: 1px solid #3d2d54; font-size: 13px; color: #dcdde1; margin-bottom: 15px;">
+                        <p style="margin: 0 0 8px 0;"><strong>📅 Date of Birth:</strong> <%= data.personalInfo.dob %></p>
+                        <p style="margin: 0 0 8px 0;"><strong>👤 Status:</strong> <%= data.personalInfo.status %></p>
+                        <p style="margin: 0 0 8px 0;"><strong>📍 Location:</strong> <%= data.personalInfo.location %></p>
+                        <p style="margin: 0 0 8px 0;"><strong>✉️ Email:</strong> <a href="mailto:<%= data.personalInfo.email %>" style="color: #a29bfe; text-decoration: none;"><%= data.personalInfo.email %></a></p>
+                        <p style="margin: 0;"><strong>📞 Phone:</strong> <%= data.personalInfo.phone %></p>
+                    </div>
+
+                    <!-- Interactive Download CV button -->
+                    <a href="/Kelvin_Wambua_CV.pdf" download class="btn-link" style="width: 100%; box-sizing: border-box;">
+                        📥 Download My Full CV
+                    </a>
+                </div>
+                <div class="actions">
+                    <button class="secondary" onclick="unflipPage('page3')">&larr; Back</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: END COVER -->
+        <div class="book-page" id="page4">
+            <div class="page-front" style="background: #120b1c; justify-content: center; align-items: center; border: 1.5px solid #6c5ce7; box-shadow: inset 10px 0 20px rgba(0,0,0,0.4), 0 0 35px rgba(108, 92, 231, 0.5);">
+                <div class="cover-content">
+                    <h2 style="color: #6c5ce7; letter-spacing: 2px; margin-bottom: 5px;">THE END</h2>
+                    <p style="font-size: 13px; color: #635585; margin-bottom: 30px;">Thank you for reading.</p>
+                    <div class="actions">
+                        <button class="secondary" onclick="unflipPage('page3')">&larr; Turn Back</button>
+                    </div>
+                </div>
+            </div>
+            <div class="page-back" style="background: #120b1c;"></div>
+        </div>
+
+    </div>
+
+    <!-- Keyboard visual tip -->
+    <div class="keyboard-tip">Use Left & Right arrow keys to turn pages</div>
+
+    <script>
+        // Track open pages for sequential keyboard logic
+        const pages = ['page1', 'page2', 'page3'];
+        let activePageIndex = 0; // index of the page we can currently flip next
+
+        function playSound() {
+            const sound = document.getElementById('flipSound');
+            sound.currentTime = 0; // Rewind to start
+            sound.play().catch(e => console.log("Sound play delayed until first user interaction."));
+        }
+
+        function flipPage(pageId) {
+            const pageEl = document.getElementById(pageId);
+            if (!pageEl.classList.contains('is-flipped')) {
+                playSound();
+                pageEl.classList.add('is-flipped');
+                
+                // Keep tracker in sync
+                const idx = pages.indexOf(pageId);
+                if (idx >= 0) activePageIndex = idx + 1;
+            }
+        }
+
+        function unflipPage(pageId) {
+            const pageEl = document.getElementById(pageId);
+            if (pageEl.classList.contains('is-flipped')) {
+                playSound();
+                pageEl.classList.remove('is-flipped');
+                
+                // Keep tracker in sync
+                const idx = pages.indexOf(pageId);
+                if (idx >= 0) activePageIndex = idx;
+            }
+        }
+
+        // Listen for Arrow Keys
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                // Flip the next available page forward
+                if (activePageIndex < pages.length) {
+                    flipPage(pages[activePageIndex]);
+                }
+            } else if (event.key === 'ArrowLeft') {
+                // Unflip the last flipped page backward
+                if (activePageIndex > 0) {
+                    unflipPage(pages[activePageIndex - 1]);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
